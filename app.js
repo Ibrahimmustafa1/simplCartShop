@@ -1,6 +1,9 @@
 let row = document.getElementById('row');
 let tbody = document.getElementById('tablebody');
 let addBtns = document.querySelector('.row')
+let totalPrice = document.createElement("h2")
+let emptyCartbtn = document.getElementById('emptycart')
+let x = document.querySelector("#totalprice")
 let inCart = false
 let cartProducts = []
 let productsList = [
@@ -17,6 +20,11 @@ let productsList = [
     {
         name: "Monitor",
         price: 500,
+        img: "http://cdn.shopify.com/s/files/1/0577/7371/9758/products/f24t350fhm-03_1200x1200.jpg?v=1652178297",
+    },
+    {
+        name: "0123",
+        price: 600,
         img: "http://cdn.shopify.com/s/files/1/0577/7371/9758/products/f24t350fhm-03_1200x1200.jpg?v=1652178297",
     }
 
@@ -68,7 +76,7 @@ let addToCart = (name, img, price) => {
                 </div>
             </div>
         </td>
-        <td class="w-25 text-center">
+        <td class="w-25 text-center price">
 
             <p class="mt-4">${price}</p>
 
@@ -81,6 +89,7 @@ let addToCart = (name, img, price) => {
         `
 
         tbody.appendChild(cartProduct)
+        updateTotalPrice()
 
     }
     else alert(`${name} already added`)
@@ -101,24 +110,41 @@ tbody.addEventListener('click', (e) => {
                 cartProducts.splice(i, 1)
                 break;
             }
-
         }
         e.target.parentElement.parentElement.remove()
+        updateTotalPrice()
     }
 })
 tbody.addEventListener('change', (e) => {
+    let price = 0
     if (e.target.nodeName == 'INPUT') {
         if (e.target.value <= 0) e.target.value = '1'
         let name = e.target.parentElement.previousElementSibling.previousElementSibling.children[0].innerText
         let item = checkIfExsixt(name)[1]
 
         if (item) {
-
             e.target.parentElement.previousElementSibling.children[0].innerText = `${Number(item.price.replace('$', '')) * Number(e.target.value)}$`
-
+            updateTotalPrice()
         }
-
     }
 })
-
+let updateTotalPrice = () => {
+    let inputs = document.querySelectorAll('input')
+    let total = 0;
+    for (let i = 0; i < cartProducts.length; i++) {
+        total += Number(cartProducts[i].price.replace('$', '')) * Number(inputs[i].value)
+    }
+    totalPrice.innerText = `${total}$`
+    x.append(totalPrice)
+}
+emptyCartbtn.addEventListener('click', (e) => {
+    let i = 0
+    console.log(cartProducts.length)
+    for (let item of cartProducts) {
+        e.target.parentElement.previousElementSibling.children[1].children[0].remove()
+        i++;
+    }
+    cartProducts = []
+    updateTotalPrice()
+})
 displayProducts()
